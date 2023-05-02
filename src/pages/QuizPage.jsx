@@ -1,18 +1,29 @@
 import React, { memo, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux'
 import { STATUS } from '../store/HomeSlice';
-import UseQuiz from '../customHooks/UseQuiz';
+import useQuiz from '../customHooks/useQuiz';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 const QuizPage = () => {
     const navigate = useNavigate()
-    const { startQuiz, makeResult } = UseQuiz()
+    const { startQuiz, makeResult, addResult } = useQuiz()
     const questions = useSelector((Store) => Store.HomeSlice.questions)
-    const status = useSelector((Store) => Store.HomeSlice.status)
-    const limits = useSelector((Store) => Store.HomeSlice.limit)
+    const catagory = useSelector((Store) => Store.HomeSlice.catagory)
+    const status = useSelector((state) => state.HomeSlice.status)
+    const signed = useSelector((Store) => Store.HomeSlice.signin)
     const [count, setCount] = useState(0)
     const [marks, setMarks] = useState(0)
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
+    const [statuss, setStatuss] = useState()
+    const [result, setResult] = useState('any')
+    // useEffect(() => {
+    //     console.log('useEffect chla')
+    //     if (marks / questions.length * 100 > 33) {
+    //         setStatuss('pass')
+    //     } else {
+    //         setStatuss('fail')
+    //     }
+    // }, [setResult])
     const onSubmit = data => {
         reset()
         if (data.answer == questions[count].correct_answer) {
@@ -25,12 +36,13 @@ const QuizPage = () => {
             alert('Thanks')
             navigate('/')
             makeResult(marks)
-
+            addResult(marks, questions, catagory)
+            // setResult('a')
         }
     };
 
     useEffect(() => {
-        if (limits != 0) {
+        if (questions.length === 0 && signed == true) {
             startQuiz()
         }
     }, [])
@@ -57,14 +69,24 @@ const QuizPage = () => {
                                     <input type="radio" id="b" {...register('answer', { required: true })} value="answer_b" />
                                     <label htmlFor="b">{questions[count].answers.answer_b}</label>
                                 </div>
-                                <div className='my-2 flex gap-2 items-center'>
-                                    <input type="radio" id="c" {...register('answer', { required: true })} value="answer_c" />
-                                    <label htmlFor="c">{questions[count].answers.answer_c}</label>
-                                </div>
-                                <div className='my-2 flex gap-2 items-center'>
-                                    <input type="radio" id="d" {...register('answer', { required: true })} value="answer_d" />
-                                    <label htmlFor="d">{questions[count].answers.answer_d}</label>
-                                </div>
+                                {questions.length != 0 && questions[count].answers.answer_c != null ?
+                                    <div className='my-2 flex gap-2 items-center'>
+                                        <input type="radio" id="c" {...register('answer', { required: true })} value="answer_c" />
+                                        <label htmlFor="c">{questions[count].answers.answer_c}</label>
+                                    </div>
+                                    : null}
+                                {questions.length != 0 && questions[count].answers.answer_d != null ?
+                                    <div className='my-2 flex gap-2 items-center'>
+                                        <input type="radio" id="d" {...register('answer', { required: true })} value="answer_d" />
+                                        <label htmlFor="d">{questions[count].answers.answer_d}</label>
+                                    </div>
+                                    : null}
+                                {questions.length != 0 && questions[count].answers.answer_e != null ?
+                                    <div className='my-2 flex gap-2 items-center'>
+                                        <input type="radio" id="e" {...register('answer', { required: true })} value="answer_e" />
+                                        <label htmlFor="e">{questions[count].answers.answer_e}</label>
+                                    </div>
+                                    : null}
                                 {errors.answer && <span role="alert">Please select at least one option</span>}
                                 <div className='flex justify-end'>
                                     {count < questions.length - 1 ?
