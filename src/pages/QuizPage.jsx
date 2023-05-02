@@ -26,7 +26,7 @@ const QuizPage = () => {
     // }, [setResult])
     const onSubmit = data => {
         reset()
-        if (data.answer == questions[count].correct_answer) {
+        if (data.answer === questions[count].correct_answer) {
             setMarks(marks + 1)
         }
         if (count < questions.length - 1) {
@@ -42,7 +42,7 @@ const QuizPage = () => {
     };
 
     useEffect(() => {
-        if (questions.length === 0 && signed == true) {
+        if (questions.length === 0 && signed === true) {
             startQuiz()
         }
     }, [])
